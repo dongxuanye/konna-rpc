@@ -1,0 +1,33 @@
+json=com.org.konnarpc.serializer.JsonSerializer0
+测试加载异常问题
+
+java.lang.ClassNotFoundException: com.org.konnarpc.serializer.JsonSerializer0
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:641)
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:188)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:526)
+	at java.base/java.lang.Class.forName0(Native Method)
+	at java.base/java.lang.Class.forName(Class.java:421)
+	at java.base/java.lang.Class.forName(Class.java:412)
+	at com.org.konnarpc.spi.SpiLoader.load(SpiLoader.java:118)
+	at com.org.konnarpc.spi.SpiLoader.loadAll(SpiLoader.java:91)
+	at com.org.konnarpc.spi.SpiLoader.main(SpiLoader.java:131)
+
+正常运行 SpiLoader方法
+18:09:26.135 [main] INFO com.org.konnarpc.spi.SpiLoader -- 加载所有 SPI
+18:09:26.139 [main] INFO com.org.konnarpc.spi.SpiLoader -- 加载类型为 com.org.konnarpc.serializer.Serializer 的 SPI
+{com.org.konnarpc.serializer.Serializer={jdk=class com.org.konnarpc.serializer.JdkSerializer, hessian=class com.org.konnarpc.serializer.HessianSerializer, json=class com.org.konnarpc.serializer.JsonSerializer, kryo=class com.org.konnarpc.serializer.KryoSerializer}}
+com.org.konnarpc.serializer.JsonSerializer@7a36aefa
+
+启动生产者日志
+18:10:57.151 [main] INFO com.org.konnarpc.RpcApplication -- rpc init, config=RpcConfig(name=konna-rpc, version=2.0, serverHost=localhost, serverPort=8080, mock=false, serializer=kryo)
+
+启动消费者日志
+RpcConfig(name=konna-rpc, version=2.0, serverHost=localhost, serverPort=8081, mock=false, serializer=kryo)
+18:12:24.418 [main] INFO com.org.konnarpc.RpcApplication -- rpc init, config=RpcConfig(name=konna-rpc, version=2.0, serverHost=localhost, serverPort=8081, mock=false, serializer=kryo)
+18:12:24.434 [main] INFO com.org.konnarpc.spi.SpiLoader -- 加载类型为 com.org.konnarpc.serializer.Serializer 的 SPI
+发送请求生产者这边监听没有问题
+用户名为：konna
+
+假如我们要实现自己的自定义序列化器
+1.写一个类实现Serializer接口
+2.在META-INF/rpc/custom目录下，写自己的spi配置文件，加载自己的实现类

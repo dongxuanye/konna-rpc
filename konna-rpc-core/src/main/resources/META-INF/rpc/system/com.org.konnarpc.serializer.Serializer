@@ -1,0 +1,4 @@
+jdk=com.org.konnarpc.serializer.JdkSerializer
+hessian=com.org.konnarpc.serializer.HessianSerializer
+json=com.org.konnarpc.serializer.JsonSerializer
+kryo=com.org.konnarpc.serializer.KryoSerializer

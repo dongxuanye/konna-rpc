@@ -9,9 +9,14 @@
   <version>1.0-SNAPSHOT</version>
 
   <dependencies>
+<!--    <dependency>-->
+<!--      <groupId>com.org</groupId>-->
+<!--      <artifactId>konna-rpc-easy</artifactId>-->
+<!--      <version>1.0-SNAPSHOT</version>-->
+<!--    </dependency>-->
     <dependency>
       <groupId>com.org</groupId>
-      <artifactId>konna-rpc-easy</artifactId>
+      <artifactId>konna-rpc-core</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
     <dependency>

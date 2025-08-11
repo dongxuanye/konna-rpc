@@ -1,0 +1,2 @@
+etcd=com.org.konnarpc.registry.EtcdRegistry
+zookeeper=com.org.konnarpc.registry.ZooKeeperRegistry

@@ -2,13 +2,18 @@ package com.org.example.consumer;
 
 import com.org.example.common.model.User;
 import com.org.example.common.service.UserService;
+import com.org.konnarpc.config.RpcConfig;
 import com.org.konnarpc.proxy.ServiceProxyFactory;
+import com.org.konnarpc.utils.ConfigUtils;
 
 /**
  * author: 简易的消费者示例
  */
 public class EasyConsumerExample {
     public static void main(String[] args) {
+        // 启动时加载配置类
+        RpcConfig rpc = ConfigUtils.loadConfig(RpcConfig.class, "rpc");
+        System.out.println(rpc);
         // todo 需要获取UserService的实现类对象
         UserService userService =  getDynamicService();
         User user = new User( );
@@ -20,6 +25,9 @@ public class EasyConsumerExample {
         }else {
             System.out.println("user == null" );
         }
+
+        long number = userService.getNumber( );
+        System.out.println("number:"+number);
     }
 
     public static UserService getStaticService(){

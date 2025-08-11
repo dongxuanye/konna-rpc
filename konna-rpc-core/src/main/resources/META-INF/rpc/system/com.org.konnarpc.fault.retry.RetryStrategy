@@ -1,0 +1,2 @@
+no=com.org.konnapc.fault.retry.NoRetryStrategy
+fixedInterval=com.org.konnarpc.fault.retry.FixedIntervalRetryStrategy

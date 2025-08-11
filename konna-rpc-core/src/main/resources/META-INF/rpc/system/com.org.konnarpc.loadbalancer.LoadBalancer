@@ -1,0 +1,3 @@
+roundRobin=com.org.konnarpc.loadbalancer.RoundRobinLoadBalancer
+random=com.org.konnarpc.loadbalancer.RandomLoadBalancer
+consistentHash=com.org.konnarpc.loadbalancer.ConsistentHashLoadBalancer

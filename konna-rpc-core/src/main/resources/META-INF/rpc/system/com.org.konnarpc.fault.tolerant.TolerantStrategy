@@ -1,0 +1,4 @@
+failBack=com.org.konnarpc.fault.tolerant.FailBackTolerantStrategy
+failFast=com.org.konnarpc.fault.tolerant.FailFastTolerantStrategy
+failOver=com.org.konnarpc.fault.tolerant.FailOverTolerantStrategy
+failSafe=com.org.konnarpc.fault.tolerant.FailSafeTolerantStrategy
