@@ -1,7 +1,10 @@
 package com.org.konnarpc;
 
+import com.org.konnarpc.config.RegistryConfig;
 import com.org.konnarpc.config.RpcConfig;
 import com.org.konnarpc.constant.RpcConstant;
+import com.org.konnarpc.registry.Registry;
+import com.org.konnarpc.registry.RegistryFactory;
 import com.org.konnarpc.utils.ConfigUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,6 +24,11 @@ public class RpcApplication {
     private static void init(RpcConfig newRpcConfig){
         rpcConfig = newRpcConfig;
         log.info("rpc init, config={}", newRpcConfig.toString());
+        // 注册中心初始化
+        RegistryConfig registryConfig = rpcConfig.getRegistryConfig( );
+        Registry registry = RegistryFactory.getInstance(registryConfig.getRegistry( ));
+        registry.init(registryConfig);
+        log.info("registry init, config={}", registryConfig);
     }
 
     /**

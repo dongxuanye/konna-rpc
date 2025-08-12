@@ -31,3 +31,28 @@ RpcConfig(name=konna-rpc, version=2.0, serverHost=localhost, serverPort=8081, mo
 假如我们要实现自己的自定义序列化器
 1.写一个类实现Serializer接口
 2.在META-INF/rpc/custom目录下，写自己的spi配置文件，加载自己的实现类
+
+完成注册中心之后
+在etcd客户端中可以看,/rpc/com.org.example.common.service.UserService:1.0/localhost:8082
+先启动服务提供一端
+HTTP server started on port 8082
+17:47:42.444 [vert.x-eventloop-thread-0] DEBUG io.netty.handler.codec.compression.ZlibCodecFactory -- -Dio.netty.noJdkZlibDecoder: false
+17:47:42.444 [vert.x-eventloop-thread-0] DEBUG io.netty.handler.codec.compression.ZlibCodecFactory -- -Dio.netty.noJdkZlibEncoder: false
+17:47:42.467 [vert.x-eventloop-thread-0] INFO com.org.konnarpc.spi.SpiLoader -- 加载类型为 com.org.konnarpc.serializer.Serializer 的 SPI
+Received request：POST /
+用户名为：konna
+Received request：POST /
+
+后启动服务消费端
+消费者一端konna
+17:50:01.910 [vert.x-eventloop-thread-0] DEBUG io.grpc.netty.NettyClientHandler -- [id: 0x9ecc5ed4, L:/127.0.0.1:37814 - R:localhost/127.0.0.1:2379] OUTBOUND HEADERS: streamId=5 headers=GrpcHttp2OutboundHeaders[:authority: localhost:2379, :path: /etcdserverpb.KV/Range, :method: POST, :scheme: http, content-type: application/grpc, te: trailers, user-agent: grpc-java-netty/1.60.0, grpc-accept-encoding: gzip] streamDependency=0 weight=16 exclusive=false padding=0 endStream=false
+17:50:01.911 [vert.x-eventloop-thread-0] DEBUG io.grpc.netty.NettyClientHandler -- [id: 0x9ecc5ed4, L:/127.0.0.1:37814 - R:localhost/127.0.0.1:2379] OUTBOUND DATA: streamId=5 padding=0 endStream=true length=111 bytes=000000006a0a332f727063636f6d2e6f72672e6578616d706c652e636f6d6d6f6e2e736572766963652e55736572536572766963653a312e302f12332f727063...
+17:50:01.913 [vert.x-eventloop-thread-0] DEBUG io.grpc.netty.NettyClientHandler -- [id: 0x9ecc5ed4, L:/127.0.0.1:37814 - R:localhost/127.0.0.1:2379] INBOUND WINDOW_UPDATE: streamId=0 windowSizeIncrement=111
+17:50:01.913 [vert.x-eventloop-thread-0] DEBUG io.grpc.netty.NettyClientHandler -- [id: 0x9ecc5ed4, L:/127.0.0.1:37814 - R:localhost/127.0.0.1:2379] INBOUND PING: ack=false bytes=145258749040133895
+17:50:01.913 [vert.x-eventloop-thread-0] DEBUG io.grpc.netty.NettyClientHandler -- [id: 0x9ecc5ed4, L:/127.0.0.1:37814 - R:localhost/127.0.0.1:2379] OUTBOUND PING: ack=true bytes=145258749040133895
+17:50:01.914 [vert.x-eventloop-thread-0] DEBUG io.grpc.netty.NettyClientHandler -- [id: 0x9ecc5ed4, L:/127.0.0.1:37814 - R:localhost/127.0.0.1:2379] INBOUND HEADERS: streamId=5 headers=GrpcHttp2ResponseHeaders[:status: 200, content-type: application/grpc] padding=0 endStream=false
+17:50:01.914 [vert.x-eventloop-thread-0] DEBUG io.grpc.netty.NettyClientHandler -- [id: 0x9ecc5ed4, L:/127.0.0.1:37814 - R:localhost/127.0.0.1:2379] INBOUND DATA: streamId=5 padding=0 endStream=false length=277 bytes=00000001100a1a08b298eaf1948386fccd0110cdd2918bd2b881cf8e011816200212ef010a412f727063636f6d2e6f72672e6578616d706c652e636f6d6d6f6e...
+17:50:01.915 [vert.x-eventloop-thread-0] DEBUG io.grpc.netty.NettyClientHandler -- [id: 0x9ecc5ed4, L:/127.0.0.1:37814 - R:localhost/127.0.0.1:2379] INBOUND HEADERS: streamId=5 headers=GrpcHttp2ResponseHeaders[grpc-status: 0, grpc-message: ] padding=0 endStream=true
+number:1
+
+由于我的租约设置的是30秒，过一会就会服务就会过期，还是存在问题
