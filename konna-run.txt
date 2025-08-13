@@ -56,3 +56,35 @@ Received request：POST /
 number:1
 
 由于我的租约设置的是30秒，过一会就会服务就会过期，还是存在问题
+
+测试心跳检测机制
+15:38:10.079 [hutool-cron-1] INFO com.org.konnarpc.registry.EtcdRegistry -- 节点 /rpc/myService:1.0/localhost:1235 续签成功
+15:38:20.028 [hutool-cron-0] INFO com.org.konnarpc.registry.EtcdRegistry -- 节点 /rpc/myService:1.0/localhost:1234 续签成功
+15:38:20.006 [hutool-cron-0] INFO com.org.konnarpc.registry.EtcdRegistry -- 节点 /rpc/myService:2.0/localhost:1234 续签成功
+
+测试服务节点下线机制
+服务提供者一端打印
+15:54:30.005 [hutool-cron-0] INFO com.org.konnarpc.registry.EtcdRegistry -- 节点 /rpc/com.org.example.common.service.UserService:1.0/localhost:8082 续签成功
+log 调用了destroy方法，当前节点下线
+
+测试消费端缓存机制
+1.先启动服务提供者
+2.修改服务消费者项目，连续调用服务3次，通过debug可以发现，第一次查注册中心、第二次查询缓存
+3.在第三次要调用服务时，下线服务提供者，可以在注册中心看到节点的注册key已经被删除了。
+4.继续向下执行，发现第三次调用服务时，又重新从注册中心查询，说明缓存已经被更新。
+第三次，在10s内下线提供者服务
+
+第一次结果
+17:08:22.455 [main] INFO com.org.konnarpc.registry.EtcdRegistry -- 从etcd中获取服务列表
+消费者一端konna
+第二次结果
+17:08:43.395 [main] INFO com.org.konnarpc.registry.EtcdRegistry -- 从缓存中获取服务列表
+消费者一端konna
+第三次结果
+17:09:01.177 [main] INFO com.org.konnarpc.registry.EtcdRegistry -- 从etcd中获取服务列表
+Exception in thread "main" java.lang.RuntimeException: 尚未发现服务
+	at com.org.konnarpc.proxy.ServiceProxy.invoke(ServiceProxy.java:63)
+	at jdk.proxy1/jdk.proxy1.$Proxy0.getUser(Unknown Source)
+	at com.org.example.consumer.EasyConsumerExample.main(EasyConsumerExample.java:43)
+第四次结果
+在第二次和第三次之间重启提供服务器，实现服务之间上下线

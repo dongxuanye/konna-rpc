@@ -10,7 +10,7 @@ import com.org.konnarpc.utils.ConfigUtils;
  * author: 简易的消费者示例
  */
 public class EasyConsumerExample {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         // 启动时加载配置类
         RpcConfig rpc = ConfigUtils.loadConfig(RpcConfig.class, "rpc");
         System.out.println(rpc);
@@ -26,8 +26,35 @@ public class EasyConsumerExample {
             System.out.println("user == null" );
         }
 
-        long number = userService.getNumber( );
-        System.out.println("number:"+number);
+//        long number = userService.getNumber( );
+//        System.out.println("number:"+number);
+
+        // 睡眠10秒
+        Thread.sleep( 10000L);
+        newUser = userService.getUser(user);
+        if (newUser != null){
+            System.out.println("消费者一端"+newUser.getName());
+        }else {
+            System.out.println("user == null" );
+        }
+
+        // 睡眠10秒
+        Thread.sleep( 10000L);
+        newUser = userService.getUser(user);
+        if (newUser != null){
+            System.out.println("消费者一端"+newUser.getName());
+        }else {
+            System.out.println("user == null" );
+        }
+
+        // 睡眠10秒
+        Thread.sleep( 10000L);
+        newUser = userService.getUser(user);
+        if (newUser != null){
+            System.out.println("消费者一端"+newUser.getName());
+        }else {
+            System.out.println("user == null" );
+        }
     }
 
     public static UserService getStaticService(){

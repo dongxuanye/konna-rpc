@@ -47,4 +47,16 @@ public interface Registry {
      * 服务销毁
      */
     void destroy();
+
+    /**
+     * 服务心跳
+     */
+    void heartBeat();
+
+    /**
+     * 服务监听
+     *
+     * @param serviceNodeKey 服务节点key
+     */
+    void watch(String serviceNodeKey);
 }
