@@ -1,10 +1,9 @@
-package com.org.konnarpc.server;
+package com.org.konnarpc.server.http;
 
 import com.org.konnarpc.RpcApplication;
 import com.org.konnarpc.model.RpcRequest;
 import com.org.konnarpc.model.RpcResponse;
 import com.org.konnarpc.registry.LocalRegistry;
-import com.org.konnarpc.serializer.JdkSerializer;
 import com.org.konnarpc.serializer.Serializer;
 import com.org.konnarpc.serializer.SerializerFactory;
 import io.vertx.core.Handler;

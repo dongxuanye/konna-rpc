@@ -1,0 +1,2 @@
+http=com.org.konnarpc.server.http.VertxHttpClient
+tcp=com.org.konnarpc.server.tcp.VertxTcpClient

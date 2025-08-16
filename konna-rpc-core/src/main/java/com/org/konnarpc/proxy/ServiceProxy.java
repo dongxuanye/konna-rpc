@@ -14,6 +14,7 @@ import com.org.konnarpc.registry.RegistryFactory;
 import com.org.konnarpc.serializer.JdkSerializer;
 import com.org.konnarpc.serializer.Serializer;
 import com.org.konnarpc.serializer.SerializerFactory;
+import com.org.konnarpc.server.client.VertxClientFactory;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
@@ -36,46 +37,38 @@ public class ServiceProxy implements InvocationHandler {
      */
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        // 指定序列化器
-        final Serializer serializer = SerializerFactory.getInstance(RpcApplication.getRpcConfig().getSerializer());
-
         String serviceName = method.getDeclaringClass( ).getName( );
-        // 构造请求
         RpcRequest rpcRequest = RpcRequest.builder( )
                 .serviceName(serviceName)
-                .methodName(method.getName())
-                .parameterTypes(method.getParameterTypes())
+                .methodName(method.getName( ))
+                .parameterTypes(method.getParameterTypes( ))
                 .args(args)
                 .build( );
-        try {
-            // 序列化
-            byte[] bodyBytes = serializer.serialize(rpcRequest);
-            RpcConfig rpcConfig = RpcApplication.getRpcConfig( );
-            Registry registry = RegistryFactory.getInstance(rpcConfig.getRegistryConfig( ).getRegistry( ));
-            ServiceMetaInfo serviceMetaInfo = new ServiceMetaInfo( );
-            // 设置元信息的名字和版本号
-            serviceMetaInfo.setServiceName(serviceName);
-            serviceMetaInfo.setServiceVersion(RpcConstant.DEFAULT_SERVICE_VERSION);
-            // 看看有几个服务地址注册上去了
-            List<ServiceMetaInfo> serviceMetaInfoList = registry.serviceDiscovery(serviceMetaInfo.getServiceKey( ));
-            // 判断一下是否为空
-            if (CollUtil.isEmpty(serviceMetaInfoList)){
-                throw new RuntimeException("尚未发现服务");
-            }
-            // todo 暂时取第一个地址
-            ServiceMetaInfo selectedServiceMetaInfo = serviceMetaInfoList.get(0);
-            // 发送请求
-            try(HttpResponse httpResponse = HttpRequest.post(selectedServiceMetaInfo.getServiceAddress())
-                    .body(bodyBytes)
-                    .execute()){
-                byte[] result = httpResponse.bodyBytes( );
-                // 反序列化
-                RpcResponse rpcResponse = serializer.deserialize(result, RpcResponse.class);
-                return rpcResponse.getData( );
-            }
-        }catch (IOException e){
-            e.printStackTrace();
+        ServiceMetaInfo selectedServiceMetaInfo = selectServiceMetaInfo(serviceName);
+        // 通过定义客户端工厂获得处理结果
+        return VertxClientFactory.getInstance(RpcApplication.getRpcConfig().getProtocol())
+                .doRequest(rpcRequest, selectedServiceMetaInfo).getData();
+    }
+
+    /**
+     * 获取服务元信息
+     * @param serviceName 服务名称
+     * @return 服务元信息
+     */
+    private ServiceMetaInfo selectServiceMetaInfo(String serviceName) {
+        RpcConfig rpcConfig = RpcApplication.getRpcConfig( );
+        Registry registry = RegistryFactory.getInstance(rpcConfig.getRegistryConfig( ).getRegistry( ));
+        ServiceMetaInfo serviceMetaInfo = new ServiceMetaInfo( );
+        // 设置元信息的名字和版本号
+        serviceMetaInfo.setServiceName(serviceName);
+        serviceMetaInfo.setServiceVersion(RpcConstant.DEFAULT_SERVICE_VERSION);
+        // 看看有几个服务地址注册上去了
+        List<ServiceMetaInfo> serviceMetaInfoList = registry.serviceDiscovery(serviceMetaInfo.getServiceKey( ));
+        // 判断一下是否为空
+        if (CollUtil.isEmpty(serviceMetaInfoList)){
+            throw new RuntimeException("尚未发现服务");
         }
-        return null;
+        // todo 暂时取第一个地址
+        return serviceMetaInfoList.get(0);
     }
 }

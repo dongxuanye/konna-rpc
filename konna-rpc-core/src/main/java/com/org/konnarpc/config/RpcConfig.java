@@ -44,4 +44,9 @@ public class RpcConfig {
      */
     private RegistryConfig registryConfig = new RegistryConfig();
 
+    /**
+     * 传输协议(http/tcp)
+     */
+    private String protocol;
+
 }

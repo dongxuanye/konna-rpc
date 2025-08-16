@@ -1,12 +1,12 @@
 package com.org.konnarpc.server;
 
 /**
- * HttpServer 接口
+ * VertxServer 接口
  */
-public interface HttpServer {
+public interface VertxServer {
 
     /**
-     * 启动 HttpServer
+     * 启动 VertxServer
      *
      * @param port 端口
      */

@@ -88,3 +88,79 @@ Exception in thread "main" java.lang.RuntimeException: 尚未发现服务
 	at com.org.example.consumer.EasyConsumerExample.main(EasyConsumerExample.java:43)
 第四次结果
 在第二次和第三次之间重启提供服务器，实现服务之间上下线
+
+测试半包和粘包问题
+由服务端启动8888端口，去监听从客户端传过来的字节数组与约定好的固长对比
+小于固长，为半包
+大于固长，为粘包
+服务提供者一端
+Hello, server!Hello, server!Hello, server!Hello, server!
+good
+粘包, length = 80
+粘包, length = 144
+粘包, length = 208
+半包, length = 16
+粘包, length = 168
+粘包, length = 224
+粘包, length = 112
+Hello, server!Hello, server!Hello, server!Hello, server!
+good
+
+服务调用者一端
+去连接8888端口，连接成功之后，发送1000次
+socket.write("Hello, server!Hello, server!Hello, server!Hello, server!");
+看服务端可以接收多少
+Connected to TCP server
+
+测试自定义的编码器和解码器功能是否可用
+ProtocolMessage(header=ProtocolMessage.Header(magic=1, version=1, serializer=0, type=0, status=20, requestId=1956624323984244736, bodyLength=349), body=RpcRequest(serviceName=myService, methodName=myMethod, serviceVersion=1.0, parameterTypes=[class java.lang.String], args=[aaa, bbb]))
+
+使用spi机制，测试基于tcp/http传输
+16:49:09.800 [main] INFO com.org.konnarpc.spi.SpiLoader -- 加载类型为 com.org.konnarpc.server.VertxServer 的 SPI
+TCP server started on port 8082
+请求解码
+用户名为：konna
+响应编码
+--------------
+请求解码
+用户名为：konna
+响应编码
+--------------
+请求解码
+用户名为：konna
+响应编码
+--------------
+请求解码
+用户名为：konna
+响应编码
+--------------
+
+17:01:24.435 [main] INFO com.org.konnarpc.registry.EtcdRegistry -- 从etcd中获取服务列表
+17:01:24.437 [main] INFO com.org.konnarpc.spi.SpiLoader -- 加载类型为 com.org.konnarpc.server.client.VertxClient 的 SPI
+17:01:24.441 [main] INFO com.org.konnarpc.server.tcp.VertxTcpClient -- tcp client send request to server
+Connected to TCP server
+请求编码
+17:01:24.651 [vert.x-eventloop-thread-0] INFO com.org.konnarpc.spi.SpiLoader -- 加载类型为 com.org.konnarpc.serializer.Serializer 的 SPI
+响应解码
+消费者一端konna
+17:01:30.023 [vert.x-eventloop-thread-0] DEBUG io.grpc.netty.NettyClientHandler -- [id: 0xdb455393, L:/127.0.0.1:57624 - R:localhost/127.0.0.1:2379] INBOUND DATA: streamId=5 padding=0 endStream=false length=282 bytes=00000001150a1b08b298eaf1948386fccd0110cdd2918bd2b881cf8e0118a60420065af50112f2010a422f7270632f636f6d2e6f72672e6578616d706c652e63...
+17:01:35.589 [main] INFO com.org.konnarpc.registry.EtcdRegistry -- 从缓存中获取服务列表
+17:01:35.589 [main] INFO com.org.konnarpc.server.tcp.VertxTcpClient -- tcp client send request to server
+Connected to TCP server
+请求编码
+响应解码
+消费者一端konna
+17:01:40.023 [vert.x-eventloop-thread-0] DEBUG io.grpc.netty.NettyClientHandler -- [id: 0xdb455393, L:/127.0.0.1:57624 - R:localhost/127.0.0.1:2379] INBOUND DATA: streamId=5 padding=0 endStream=false length=282 bytes=00000001150a1b08b298eaf1948386fccd0110cdd2918bd2b881cf8e0118a70420065af50112f2010a422f7270632f636f6d2e6f72672e6578616d706c652e63...
+17:01:45.656 [main] INFO com.org.konnarpc.registry.EtcdRegistry -- 从缓存中获取服务列表
+17:01:45.656 [main] INFO com.org.konnarpc.server.tcp.VertxTcpClient -- tcp client send request to server
+Connected to TCP server
+请求编码
+响应解码
+消费者一端konna
+17:01:50.024 [vert.x-eventloop-thread-0] DEBUG io.grpc.netty.NettyClientHandler -- [id: 0xdb455393, L:/127.0.0.1:57624 - R:localhost/127.0.0.1:2379] INBOUND DATA: streamId=5 padding=0 endStream=false length=282 bytes=00000001150a1b08b298eaf1948386fccd0110cdd2918bd2b881cf8e0118a80420065af50112f2010a422f7270632f636f6d2e6f72672e6578616d706c652e63...
+17:01:55.717 [main] INFO com.org.konnarpc.registry.EtcdRegistry -- 从缓存中获取服务列表
+17:01:55.717 [main] INFO com.org.konnarpc.server.tcp.VertxTcpClient -- tcp client send request to server
+Connected to TCP server
+请求编码
+响应解码
+消费者一端konna

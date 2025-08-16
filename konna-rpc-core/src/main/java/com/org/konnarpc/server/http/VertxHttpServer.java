@@ -1,11 +1,12 @@
-package com.org.konnarpc.server;
+package com.org.konnarpc.server.http;
 
+import com.org.konnarpc.server.VertxServer;
 import io.vertx.core.Vertx;
 
 /**
  * 基于 vert.x实现方法的http服务
  */
-public class VertxHttpServer implements HttpServer {
+public class VertxHttpServer implements VertxServer {
     @Override
     public void doStart(int port) {
         // 创建vert.x实例

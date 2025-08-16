@@ -7,8 +7,9 @@ import com.org.konnarpc.model.ServiceMetaInfo;
 import com.org.konnarpc.registry.LocalRegistry;
 import com.org.konnarpc.registry.Registry;
 import com.org.konnarpc.registry.RegistryFactory;
-import com.org.konnarpc.server.HttpServer;
-import com.org.konnarpc.server.VertxHttpServer;
+import com.org.konnarpc.server.VertxServer;
+import com.org.konnarpc.server.VertxServerFactory;
+import com.org.konnarpc.server.http.VertxHttpServer;
 import com.org.konnarpc.RpcApplication;
 
 public class EasyProviderExample {
@@ -36,8 +37,8 @@ public class EasyProviderExample {
             throw new RuntimeException("服务注册失败："+e);
         }
 
-        // 提供服务
-        HttpServer server = new VertxHttpServer( );
+       // 通过工厂模式可以获得服务
+        VertxServer server = VertxServerFactory.getInstance(rpcConfig.getProtocol( ));
         server.doStart(rpcConfig.getServerPort());
     }
 }
