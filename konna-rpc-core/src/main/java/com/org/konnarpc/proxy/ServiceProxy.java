@@ -6,6 +6,8 @@ import cn.hutool.http.HttpResponse;
 import com.org.konnarpc.RpcApplication;
 import com.org.konnarpc.config.RpcConfig;
 import com.org.konnarpc.constant.RpcConstant;
+import com.org.konnarpc.loadbalancer.LoadBalancer;
+import com.org.konnarpc.loadbalancer.LoadBalancerFactory;
 import com.org.konnarpc.model.RpcRequest;
 import com.org.konnarpc.model.RpcResponse;
 import com.org.konnarpc.model.ServiceMetaInfo;
@@ -19,6 +21,7 @@ import com.org.konnarpc.server.client.VertxClientFactory;
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -68,7 +71,13 @@ public class ServiceProxy implements InvocationHandler {
         if (CollUtil.isEmpty(serviceMetaInfoList)){
             throw new RuntimeException("尚未发现服务");
         }
-        // todo 暂时取第一个地址
-        return serviceMetaInfoList.get(0);
+        // 负载均衡算法
+        LoadBalancer loadBalancer = LoadBalancerFactory.getInstance(rpcConfig.getLoadBalancer( ));
+        // 将调用方法名(请求路径)作为负载均衡参数
+        HashMap<String, Object> requestParams = new HashMap<>( );
+        requestParams.put("methodName", serviceName);
+        ServiceMetaInfo selectedServiceMetaInfo = loadBalancer.select(requestParams, serviceMetaInfoList);
+        System.out.println("选择的服务节点为："+selectedServiceMetaInfo.getServiceNodeKey( ));
+        return selectedServiceMetaInfo;
     }
 }

@@ -11,7 +11,10 @@ import com.org.konnarpc.server.VertxServer;
 import com.org.konnarpc.server.VertxServerFactory;
 import com.org.konnarpc.RpcApplication;
 
-public class EasyProviderExample {
+/**
+ * 用于测试负载均衡新憎的客户端
+ */
+public class EasyProviderExample2 {
 
     public static void main(String[] args) {
         // RPC框架初始化
@@ -36,7 +39,7 @@ public class EasyProviderExample {
             throw new RuntimeException("服务注册失败："+e);
         }
 
-       // 通过工厂模式可以获得服务
+        // 通过工厂模式可以获得服务
         VertxServer server = VertxServerFactory.getInstance(rpcConfig.getProtocol( ));
         server.doStart(rpcConfig.getServerPort());
     }

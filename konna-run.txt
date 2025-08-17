@@ -164,3 +164,61 @@ Connected to TCP server
 请求编码
 响应解码
 消费者一端konna
+
+轮询算法
+ServiceMetaInfo(serviceName=orderService, serviceVersion=1.0, serviceHost=localhost, servicePort=1234, serviceGroup=default)
+ServiceMetaInfo(serviceName=pictureService, serviceVersion=1.0, serviceHost=localhost, servicePort=1235, serviceGroup=default)
+ServiceMetaInfo(serviceName=userService, serviceVersion=2.0, serviceHost=localhost, servicePort=1236, serviceGroup=default)
+随机算法
+ServiceMetaInfo(serviceName=orderService, serviceVersion=1.0, serviceHost=localhost, servicePort=1234, serviceGroup=default)
+ServiceMetaInfo(serviceName=orderService, serviceVersion=1.0, serviceHost=localhost, servicePort=1234, serviceGroup=default)
+ServiceMetaInfo(serviceName=userService, serviceVersion=2.0, serviceHost=localhost, servicePort=1236, serviceGroup=default)
+一致哈希算法 (有点问题)
+ServiceMetaInfo(serviceName=orderService, serviceVersion=1.0, serviceHost=localhost, servicePort=1234, serviceGroup=default)
+ServiceMetaInfo(serviceName=orderService, serviceVersion=1.0, serviceHost=localhost, servicePort=1234, serviceGroup=default)
+ServiceMetaInfo(serviceName=orderService, serviceVersion=1.0, serviceHost=localhost, servicePort=1234, serviceGroup=default)
+
+应用到服务端
+开启两个生产端EasyProviderExample、EasyProviderExample2
+启动完改另一个配置文件端口8082 -> 8085
+
+选择负载均衡策略为轮询算法
+选择的服务节点为：com.org.example.common.service.UserService:1.0/localhost:8082
+17:39:58.855 [main] INFO com.org.konnarpc.spi.SpiLoader -- 加载类型为 com.org.konnarpc.server.client.VertxClient 的 SPI
+17:39:58.860 [main] INFO com.org.konnarpc.server.tcp.VertxTcpClient -- tcp client send request to server
+Connected to TCP server
+请求编码
+17:39:59.083 [vert.x-eventloop-thread-0] INFO com.org.konnarpc.spi.SpiLoader -- 加载类型为 com.org.konnarpc.serializer.Serializer 的 SPI
+响应解码
+消费者一端konna
+17:40:00.027 [vert.x-eventloop-thread-0] DEBUG io.grpc.netty.NettyClientHandler -- [id: 0xfece27c3, L:/127.0.0.1:56302 - R:localhost/127.0.0.1:2379] INBOUND DATA: streamId=5 padding=0 endStream=false length=282 bytes=00000001150a1b08b298eaf1948386fccd0110cdd2918bd2b881cf8e0118d50420075af50112f2010a422f7270632f636f6d2e6f72672e6578616d706c652e63...
+17:40:00.038 [vert.x-eventloop-thread-0] DEBUG io.grpc.netty.NettyClientHandler -- [id: 0xfece27c3, L:/127.0.0.1:56302 - R:localhost/127.0.0.1:2379] INBOUND DATA: streamId=7 padding=0 endStream=false length=282 bytes=00000001150a1b08b298eaf1948386fccd0110cdd2918bd2b881cf8e0118d60420075af50112f2010a422f7270632f636f6d2e6f72672e6578616d706c652e63...
+17:40:09.860 [main] INFO com.org.konnarpc.registry.EtcdRegistry -- 从缓存中获取服务列表
+选择的服务节点为：com.org.example.common.service.UserService:1.0/localhost:8085
+17:40:09.860 [main] INFO com.org.konnarpc.server.tcp.VertxTcpClient -- tcp client send request to server
+Connected to TCP server
+请求编码
+17:40:10.018 [vert.x-eventloop-thread-0] DEBUG io.grpc.netty.NettyClientHandler -- [id: 0xfece27c3, L:/127.0.0.1:56302 - R:localhost/127.0.0.1:2379] INBOUND DATA: streamId=5 padding=0 endStream=false length=282 bytes=00000001150a1b08b298eaf1948386fccd0110cdd2918bd2b881cf8e0118d70420075af50112f2010a422f7270632f636f6d2e6f72672e6578616d706c652e63...
+17:40:10.021 [vert.x-eventloop-thread-0] DEBUG io.grpc.netty.NettyClientHandler -- [id: 0xfece27c3, L:/127.0.0.1:56302 - R:localhost/127.0.0.1:2379] INBOUND DATA: streamId=7 padding=0 endStream=false length=282 bytes=00000001150a1b08b298eaf1948386fccd0110cdd2918bd2b881cf8e0118d80420075af50112f2010a422f7270632f636f6d2e6f72672e6578616d706c652e63...
+响应解码
+消费者一端konna
+17:40:20.024 [vert.x-eventloop-thread-0] DEBUG io.grpc.netty.NettyClientHandler -- [id: 0xfece27c3, L:/127.0.0.1:56302 - R:localhost/127.0.0.1:2379] INBOUND DATA: streamId=7 padding=0 endStream=false length=282 bytes=00000001150a1b08b298eaf1948386fccd0110cdd2918bd2b881cf8e0118d90420075af50112f2010a422f7270632f636f6d2e6f72672e6578616d706c652e63...
+17:40:20.026 [vert.x-eventloop-thread-0] DEBUG io.grpc.netty.NettyClientHandler -- [id: 0xfece27c3, L:/127.0.0.1:56302 - R:localhost/127.0.0.1:2379] INBOUND DATA: streamId=5 padding=0 endStream=false length=282 bytes=00000001150a1b08b298eaf1948386fccd0110cdd2918bd2b881cf8e0118da0420075af50112f2010a422f7270632f636f6d2e6f72672e6578616d706c652e63...
+17:40:20.361 [main] INFO com.org.konnarpc.registry.EtcdRegistry -- 从缓存中获取服务列表
+选择的服务节点为：com.org.example.common.service.UserService:1.0/localhost:8082
+17:40:20.361 [main] INFO com.org.konnarpc.server.tcp.VertxTcpClient -- tcp client send request to server
+Connected to TCP server
+请求编码
+响应解码
+消费者一端konna
+17:40:30.027 [vert.x-eventloop-thread-0] DEBUG io.grpc.netty.NettyClientHandler -- [id: 0xfece27c3, L:/127.0.0.1:56302 - R:localhost/127.0.0.1:2379] INBOUND DATA: streamId=5 padding=0 endStream=false length=282 bytes=00000001150a1b08b298eaf1948386fccd0110cdd2918bd2b881cf8e0118db0420075af50112f2010a422f7270632f636f6d2e6f72672e6578616d706c652e63...
+17:40:30.028 [vert.x-eventloop-thread-0] DEBUG io.grpc.netty.NettyClientHandler -- [id: 0xfece27c3, L:/127.0.0.1:56302 - R:localhost/127.0.0.1:2379] INBOUND DATA: streamId=7 padding=0 endStream=false length=282 bytes=00000001150a1b08b298eaf1948386fccd0110cdd2918bd2b881cf8e0118dc0420075af50112f2010a422f7270632f636f6d2e6f72672e6578616d706c652e63...
+17:40:30.420 [main] INFO com.org.konnarpc.registry.EtcdRegistry -- 从缓存中获取服务列表
+选择的服务节点为：com.org.example.common.service.UserService:1.0/localhost:8085
+17:40:30.420 [main] INFO com.org.konnarpc.server.tcp.VertxTcpClient -- tcp client send request to server
+Connected to TCP server
+请求编码
+响应解码
+消费者一端konna
+
+如果选择哈希一致性算法，好像每一次都是同一个节点

@@ -1,5 +1,6 @@
 package com.org.konnarpc.config;
 
+import com.org.konnarpc.loadbalancer.LoadBalancerKeys;
 import com.org.konnarpc.serializer.SerializerKeys;
 import lombok.Data;
 
@@ -48,5 +49,10 @@ public class RpcConfig {
      * 传输协议(http/tcp)
      */
     private String protocol;
+
+    /**
+     * 负载均衡器
+     */
+    private String loadBalancer = LoadBalancerKeys.ROUND_ROBIN;
 
 }
