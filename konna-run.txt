@@ -222,3 +222,38 @@ Connected to TCP server
 消费者一端konna
 
 如果选择哈希一致性算法，好像每一次都是同一个节点
+
+测试重试策略
+17:21:15.258 [main] INFO com.org.konnarpc.fault.retry.ExponentialBackoffRetryStrategy -- 执行指数退避策略：ExponentialBackoffRetryStrategy
+测试重试
+17:21:15.293 [main] INFO com.org.konnarpc.fault.retry.ExponentialBackoffRetryStrategy -- 第1次重试
+测试重试
+17:21:17.304 [main] INFO com.org.konnarpc.fault.retry.ExponentialBackoffRetryStrategy -- 第2次重试
+测试重试
+17:21:21.314 [main] INFO com.org.konnarpc.fault.retry.ExponentialBackoffRetryStrategy -- 第3次重试
+测试重试
+17:21:29.318 [main] INFO com.org.konnarpc.fault.retry.ExponentialBackoffRetryStrategy -- 第4次重试
+测试重试
+17:21:39.322 [main] INFO com.org.konnarpc.fault.retry.ExponentialBackoffRetryStrategy -- 第5次重试
+重试多次失败！
+
+测试应用到代码种指数避退重试策略
+开启两个生产端EasyProviderExample、EasyProviderExample2
+启动完改另一个配置文件端口8082 -> 8085
+
+将断点打到下面的代码：
+if (CollUtil.isEmpty(serviceMetaInfoList)){ // 断点
+    throw new RuntimeException("尚未发现服务");
+}
+断点到了之后，把对应的EasyProviderExample，停掉
+发现消费者一端日志
+Failed to connect to TCP server
+17:14:57.220 [main] INFO com.org.konnarpc.fault.retry.ExponentialBackoffRetryStrategy -- 第1次重试
+17:14:59.293 [main] INFO com.org.konnarpc.fault.retry.ExponentialBackoffRetryStrategy -- 第2次重试
+17:15:03.365 [main] INFO com.org.konnarpc.fault.retry.ExponentialBackoffRetryStrategy -- 第3次重试
+这个时候，把刚刚停的服务重跑起来，发现服务重连了，就成功了
+Connected to TCP server
+请求编码
+响应解码
+17:15:11.799 [main] INFO com.org.konnarpc.fault.retry.ExponentialBackoffRetryStrategy -- 第4次重试
+消费者一端konna

@@ -1,2 +1,3 @@
-no=com.org.konnapc.fault.retry.NoRetryStrategy
+no=com.org.konnarpc.fault.retry.NoRetryStrategy
 fixedInterval=com.org.konnarpc.fault.retry.FixedIntervalRetryStrategy
+exponentialBackoff=com.org.konnarpc.fault.retry.ExponentialBackoffRetryStrategy

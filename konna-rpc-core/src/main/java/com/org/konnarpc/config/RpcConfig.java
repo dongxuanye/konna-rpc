@@ -1,5 +1,6 @@
 package com.org.konnarpc.config;
 
+import com.org.konnarpc.fault.retry.RetryStrategyKeys;
 import com.org.konnarpc.loadbalancer.LoadBalancerKeys;
 import com.org.konnarpc.serializer.SerializerKeys;
 import lombok.Data;
@@ -54,5 +55,10 @@ public class RpcConfig {
      * 负载均衡器
      */
     private String loadBalancer = LoadBalancerKeys.ROUND_ROBIN;
+
+    /**
+     * 重试策略
+     */
+    private String retryStrategy = RetryStrategyKeys.EXPONENTIAL_BACKOFF;
 
 }

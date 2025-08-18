@@ -6,6 +6,8 @@ import cn.hutool.http.HttpResponse;
 import com.org.konnarpc.RpcApplication;
 import com.org.konnarpc.config.RpcConfig;
 import com.org.konnarpc.constant.RpcConstant;
+import com.org.konnarpc.fault.retry.RetryStrategy;
+import com.org.konnarpc.fault.retry.RetryStrategyFactory;
 import com.org.konnarpc.loadbalancer.LoadBalancer;
 import com.org.konnarpc.loadbalancer.LoadBalancerFactory;
 import com.org.konnarpc.model.RpcRequest;
@@ -16,6 +18,7 @@ import com.org.konnarpc.registry.RegistryFactory;
 import com.org.konnarpc.serializer.JdkSerializer;
 import com.org.konnarpc.serializer.Serializer;
 import com.org.konnarpc.serializer.SerializerFactory;
+import com.org.konnarpc.server.client.VertxClient;
 import com.org.konnarpc.server.client.VertxClientFactory;
 
 import java.io.IOException;
@@ -47,10 +50,23 @@ public class ServiceProxy implements InvocationHandler {
                 .parameterTypes(method.getParameterTypes( ))
                 .args(args)
                 .build( );
-        ServiceMetaInfo selectedServiceMetaInfo = selectServiceMetaInfo(serviceName);
+        RpcConfig rpcConfig = RpcApplication.getRpcConfig( );
+        Registry registry = RegistryFactory.getInstance(rpcConfig.getRegistryConfig( ).getRegistry( ));
+        ServiceMetaInfo selectedServiceMetaInfo = selectServiceMetaInfo(serviceName, registry, rpcConfig);
         // 通过定义客户端工厂获得处理结果
-        return VertxClientFactory.getInstance(RpcApplication.getRpcConfig().getProtocol())
-                .doRequest(rpcRequest, selectedServiceMetaInfo).getData();
+        VertxClient client = VertxClientFactory.getInstance(RpcApplication.getRpcConfig( ).getProtocol( ));
+        // 引入重试策略
+        RetryStrategy retryStrategy = RetryStrategyFactory.getInstance(RpcApplication.getRpcConfig( ).getRetryStrategy( ));
+        RpcResponse rpcResponse = retryStrategy.doRetry(() -> {
+            try {
+                return client.doRequest(rpcRequest, selectedServiceMetaInfo);
+            } catch (Throwable e) {
+                // 捕获到异常之后删除缓存
+                registry.unRegister(selectedServiceMetaInfo);
+                throw new RuntimeException("调用失败！", e);
+            }
+        });
+        return rpcResponse.getData();
     }
 
     /**
@@ -58,9 +74,7 @@ public class ServiceProxy implements InvocationHandler {
      * @param serviceName 服务名称
      * @return 服务元信息
      */
-    private ServiceMetaInfo selectServiceMetaInfo(String serviceName) {
-        RpcConfig rpcConfig = RpcApplication.getRpcConfig( );
-        Registry registry = RegistryFactory.getInstance(rpcConfig.getRegistryConfig( ).getRegistry( ));
+    private ServiceMetaInfo selectServiceMetaInfo(String serviceName, Registry registry, RpcConfig rpcConfig) {
         ServiceMetaInfo serviceMetaInfo = new ServiceMetaInfo( );
         // 设置元信息的名字和版本号
         serviceMetaInfo.setServiceName(serviceName);

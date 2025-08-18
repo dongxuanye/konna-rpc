@@ -2,10 +2,14 @@ package com.org.konnarpc.server.tcp;
 
 import cn.hutool.core.util.IdUtil;
 import com.org.konnarpc.RpcApplication;
+import com.org.konnarpc.config.RegistryConfig;
+import com.org.konnarpc.config.RpcConfig;
 import com.org.konnarpc.model.RpcRequest;
 import com.org.konnarpc.model.RpcResponse;
 import com.org.konnarpc.model.ServiceMetaInfo;
 import com.org.konnarpc.protocol.*;
+import com.org.konnarpc.registry.Registry;
+import com.org.konnarpc.registry.RegistryFactory;
 import com.org.konnarpc.server.client.VertxClient;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
@@ -60,6 +64,8 @@ public class VertxTcpClient implements VertxClient {
                 }));
             }else {
                 System.err.println("Failed to connect to TCP server" );
+                // 假如连接失败，则抛出运行时异常
+                responseFuture.completeExceptionally(new RuntimeException("Failed to connect to TCP server"));
             }
         });
         // 同步：等待接收到响应结果再执行
