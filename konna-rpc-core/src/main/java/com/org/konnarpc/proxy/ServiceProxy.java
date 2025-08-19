@@ -8,6 +8,8 @@ import com.org.konnarpc.config.RpcConfig;
 import com.org.konnarpc.constant.RpcConstant;
 import com.org.konnarpc.fault.retry.RetryStrategy;
 import com.org.konnarpc.fault.retry.RetryStrategyFactory;
+import com.org.konnarpc.fault.tolerant.TolerantStrategy;
+import com.org.konnarpc.fault.tolerant.TolerantStrategyFactory;
 import com.org.konnarpc.loadbalancer.LoadBalancer;
 import com.org.konnarpc.loadbalancer.LoadBalancerFactory;
 import com.org.konnarpc.model.RpcRequest;
@@ -26,6 +28,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 服务代理类(jdk动态代理)
@@ -52,7 +55,15 @@ public class ServiceProxy implements InvocationHandler {
                 .build( );
         RpcConfig rpcConfig = RpcApplication.getRpcConfig( );
         Registry registry = RegistryFactory.getInstance(rpcConfig.getRegistryConfig( ).getRegistry( ));
-        ServiceMetaInfo selectedServiceMetaInfo = selectServiceMetaInfo(serviceName, registry, rpcConfig);
+        // 定义元信息
+        ServiceMetaInfo serviceMetaInfo = new ServiceMetaInfo( );
+        // 设置元信息的名字和版本号
+        serviceMetaInfo.setServiceName(serviceName);
+        serviceMetaInfo.setServiceVersion(RpcConstant.DEFAULT_SERVICE_VERSION);
+        // 看看有几个服务地址注册上去了
+        List<ServiceMetaInfo> serviceMetaInfoList = registry.serviceDiscovery(serviceMetaInfo.getServiceKey( ));
+        // 选择服务
+        ServiceMetaInfo selectedServiceMetaInfo = selectServiceMetaInfo(serviceName, rpcConfig, serviceMetaInfoList);
         // 通过定义客户端工厂获得处理结果
         VertxClient client = VertxClientFactory.getInstance(RpcApplication.getRpcConfig( ).getProtocol( ));
         // 引入重试策略
@@ -60,10 +71,16 @@ public class ServiceProxy implements InvocationHandler {
         RpcResponse rpcResponse = retryStrategy.doRetry(() -> {
             try {
                 return client.doRequest(rpcRequest, selectedServiceMetaInfo);
-            } catch (Throwable e) {
-                // 捕获到异常之后删除缓存
-                registry.unRegister(selectedServiceMetaInfo);
-                throw new RuntimeException("调用失败！", e);
+            } catch (Exception e) {
+                // 捕获到异常之后删除缓存，放到后面处理
+//                registry.unRegister(selectedServiceMetaInfo);
+                Map<String, Object> requestTolerantParamMap = new HashMap<>();
+                requestTolerantParamMap.put("rpcRequest",rpcRequest);
+                requestTolerantParamMap.put("selectedServiceMetaInfo",selectedServiceMetaInfo);
+                requestTolerantParamMap.put("serviceMetaInfoList",serviceMetaInfoList);
+                // 容错机制
+                TolerantStrategy tolerantStrategy = TolerantStrategyFactory.getInstance(rpcConfig.getTolerantStrategy( ));
+                return tolerantStrategy.doTolerant(requestTolerantParamMap, e);
             }
         });
         return rpcResponse.getData();
@@ -74,13 +91,7 @@ public class ServiceProxy implements InvocationHandler {
      * @param serviceName 服务名称
      * @return 服务元信息
      */
-    private ServiceMetaInfo selectServiceMetaInfo(String serviceName, Registry registry, RpcConfig rpcConfig) {
-        ServiceMetaInfo serviceMetaInfo = new ServiceMetaInfo( );
-        // 设置元信息的名字和版本号
-        serviceMetaInfo.setServiceName(serviceName);
-        serviceMetaInfo.setServiceVersion(RpcConstant.DEFAULT_SERVICE_VERSION);
-        // 看看有几个服务地址注册上去了
-        List<ServiceMetaInfo> serviceMetaInfoList = registry.serviceDiscovery(serviceMetaInfo.getServiceKey( ));
+    private ServiceMetaInfo selectServiceMetaInfo(String serviceName, RpcConfig rpcConfig,List<ServiceMetaInfo> serviceMetaInfoList) {
         // 判断一下是否为空
         if (CollUtil.isEmpty(serviceMetaInfoList)){
             throw new RuntimeException("尚未发现服务");

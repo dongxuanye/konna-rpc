@@ -27,7 +27,7 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 public class VertxTcpClient implements VertxClient {
     @Override
-    public RpcResponse doRequest(RpcRequest rpcRequest, ServiceMetaInfo serviceMetaInfo) throws Throwable {
+    public RpcResponse doRequest(RpcRequest rpcRequest, ServiceMetaInfo serviceMetaInfo) throws Exception {
         log.info("tcp client send request to server");
         Vertx vertx = Vertx.vertx( );
         NetClient netClient = vertx.createNetClient( );

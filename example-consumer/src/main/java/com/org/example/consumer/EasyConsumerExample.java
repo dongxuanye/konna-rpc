@@ -29,32 +29,32 @@ public class EasyConsumerExample {
 //        long number = userService.getNumber( );
 //        System.out.println("number:"+number);
 
-        // 睡眠10秒
-        Thread.sleep( 10000L);
-        newUser = userService.getUser(user);
-        if (newUser != null){
-            System.out.println("消费者一端"+newUser.getName());
-        }else {
-            System.out.println("user == null" );
-        }
-
-        // 睡眠10秒
-        Thread.sleep( 10000L);
-        newUser = userService.getUser(user);
-        if (newUser != null){
-            System.out.println("消费者一端"+newUser.getName());
-        }else {
-            System.out.println("user == null" );
-        }
-
-        // 睡眠10秒
-        Thread.sleep( 10000L);
-        newUser = userService.getUser(user);
-        if (newUser != null){
-            System.out.println("消费者一端"+newUser.getName());
-        }else {
-            System.out.println("user == null" );
-        }
+//        // 睡眠10秒
+//        Thread.sleep( 10000L);
+//        newUser = userService.getUser(user);
+//        if (newUser != null){
+//            System.out.println("消费者一端"+newUser.getName());
+//        }else {
+//            System.out.println("user == null" );
+//        }
+//
+//        // 睡眠10秒
+//        Thread.sleep( 10000L);
+//        newUser = userService.getUser(user);
+//        if (newUser != null){
+//            System.out.println("消费者一端"+newUser.getName());
+//        }else {
+//            System.out.println("user == null" );
+//        }
+//
+//        // 睡眠10秒
+//        Thread.sleep( 10000L);
+//        newUser = userService.getUser(user);
+//        if (newUser != null){
+//            System.out.println("消费者一端"+newUser.getName());
+//        }else {
+//            System.out.println("user == null" );
+//        }
     }
 
     public static UserService getStaticService(){

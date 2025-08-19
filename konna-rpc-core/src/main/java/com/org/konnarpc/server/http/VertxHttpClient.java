@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class VertxHttpClient implements VertxClient {
     @Override
-    public RpcResponse doRequest(RpcRequest rpcRequest, ServiceMetaInfo serviceMetaInfo) throws Throwable {
+    public RpcResponse doRequest(RpcRequest rpcRequest, ServiceMetaInfo serviceMetaInfo) throws Exception {
         log.info("http client send request to server");
         // 获得请求之后，先从配置中获取序列化方式
         final Serializer serializer = SerializerFactory.getInstance(RpcApplication.getRpcConfig( ).getSerializer( ));

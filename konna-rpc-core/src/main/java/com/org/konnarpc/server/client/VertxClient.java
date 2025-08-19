@@ -9,6 +9,6 @@ import com.org.konnarpc.model.ServiceMetaInfo;
  */
 public interface VertxClient {
 
-    RpcResponse doRequest(RpcRequest rpcRequest, ServiceMetaInfo serviceMetaInfo) throws Throwable;
+    RpcResponse doRequest(RpcRequest rpcRequest, ServiceMetaInfo serviceMetaInfo) throws Exception;
 
 }

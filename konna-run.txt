@@ -257,3 +257,49 @@ Connected to TCP server
 响应解码
 17:15:11.799 [main] INFO com.org.konnarpc.fault.retry.ExponentialBackoffRetryStrategy -- 第4次重试
 消费者一端konna
+
+静默容错处理 - 测试
+Failed to connect to TCP server
+17:06:53.264 [main] INFO com.org.konnarpc.spi.SpiLoader -- 加载类型为 com.org.konnarpc.fault.tolerant.TolerantStrategy 的 SPI
+17:06:53.277 [main] INFO com.org.konnarpc.fault.tolerant.FailSafeTolerantStrategy -- 静默处理异常
+user == null
+
+快速失败容错处理 - 测试
+Failed to connect to TCP server
+17:10:36.808 [main] INFO com.org.konnarpc.spi.SpiLoader -- 加载类型为 com.org.konnarpc.fault.tolerant.TolerantStrategy 的 SPI
+Exception in thread "main" java.lang.RuntimeException: 快速失败容错处理 - 服务报错
+
+服务转移策略容错处理 - 测试
+开启两个生产端EasyProviderExample、EasyProviderExample2
+启动完改另一个配置文件端口8082 -> 8085
+断点打在负载均衡策略拿到哪个节点了
+
+消费者一端日志
+一开始使用的是8085的服务
+选择的服务节点为：com.org.example.common.service.UserService:1.0/localhost:8085
+Failed to connect to TCP server
+17:26:02.971 [main] INFO com.org.konnarpc.spi.SpiLoader -- 加载类型为 com.org.konnarpc.fault.tolerant.TolerantStrategy 的 SPI
+17:26:02.982 [main] INFO com.org.konnarpc.fault.tolerant.FailOverTolerantStrategy -- 转移到其他服务节点 - 容错策略
+通过负载均衡策略，获取节点：ServiceMetaInfo(serviceName=com.org.example.common.service.UserService, serviceVersion=1.0, serviceHost=localhost, servicePort=8082, serviceGroup=default)
+17:26:02.991 [main] INFO com.org.konnarpc.fault.retry.NoRetryStrategy -- 执行不重试策略：NoRetryStrategy
+17:26:02.991 [main] INFO com.org.konnarpc.server.tcp.VertxTcpClient -- tcp client send request to server
+Connected to TCP server
+请求编码
+17:26:03.126 [vert.x-eventloop-thread-0] INFO com.org.konnarpc.spi.SpiLoader -- 加载类型为 com.org.konnarpc.serializer.Serializer 的 SPI
+响应解码
+17:26:03.950 [main] INFO com.org.konnarpc.fault.tolerant.FailOverTolerantStrategy -- 通过转移其他服务节点：
+ServiceMetaInfo(serviceName=com.org.example.common.service.UserService, serviceVersion=1.0,
+serviceHost=localhost, servicePort=8082, serviceGroup=default)
+消费者一端konna
+后面切换到8082端口拿到了服务
+
+服务降级容错策略 - 测试
+选择的服务节点为：com.org.example.common.service.UserService:1.0/localhost:8085
+17:34:31.916 [main] INFO com.org.konnarpc.spi.SpiLoader -- 加载类型为 com.org.konnarpc.fault.retry.RetryStrategy 的 SPI
+17:34:31.923 [main] INFO com.org.konnarpc.fault.retry.NoRetryStrategy -- 执行不重试策略：NoRetryStrategy
+17:34:31.923 [main] INFO com.org.konnarpc.server.tcp.VertxTcpClient -- tcp client send request to server
+Failed to connect to TCP server
+17:34:32.108 [main] INFO com.org.konnarpc.spi.SpiLoader -- 加载类型为 com.org.konnarpc.fault.tolerant.TolerantStrategy 的 SPI
+17:34:32.121 [main] INFO com.org.konnarpc.proxy.MockServiceProxy -- mock invoke getUser
+17:34:32.121 [main] INFO com.org.konnarpc.fault.tolerant.FailBackTolerantStrategy -- 降级到其他服务 mock服务中或者返回404
+user == null
