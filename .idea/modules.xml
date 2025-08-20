@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/example-springboot-consumer/example-springboot-consumer.iml" filepath="$PROJECT_DIR$/example-springboot-consumer/example-springboot-consumer.iml" />
       <module fileurl="file://$PROJECT_DIR$/konna-rpc.iml" filepath="$PROJECT_DIR$/konna-rpc.iml" />
     </modules>
   </component>

@@ -303,3 +303,12 @@ Failed to connect to TCP server
 17:34:32.121 [main] INFO com.org.konnarpc.proxy.MockServiceProxy -- mock invoke getUser
 17:34:32.121 [main] INFO com.org.konnarpc.fault.tolerant.FailBackTolerantStrategy -- 降级到其他服务 mock服务中或者返回404
 user == null
+
+测试集成到springboot中
+test方法
+Connected to TCP server
+请求编码
+2025-08-20T17:16:42.616+08:00  INFO 16360 --- [ntloop-thread-0] com.org.konnarpc.spi.SpiLoader           : 加载类型为 com.org.konnarpc.serializer.Serializer 的 SPI
+响应解码
+konna
+调用了destroy方法，当前节点下线

@@ -3,6 +3,7 @@ package com.org.konnarpc.config;
 import com.org.konnarpc.fault.retry.RetryStrategyKeys;
 import com.org.konnarpc.fault.tolerant.TolerantStrategyKeys;
 import com.org.konnarpc.loadbalancer.LoadBalancerKeys;
+import com.org.konnarpc.protocol.ProtocolKeys;
 import com.org.konnarpc.serializer.SerializerKeys;
 import lombok.Data;
 
@@ -50,7 +51,7 @@ public class RpcConfig {
     /**
      * 传输协议(http/tcp)
      */
-    private String protocol;
+    private String protocol = ProtocolKeys.TCP;
 
     /**
      * 负载均衡器

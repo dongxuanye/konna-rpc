@@ -1,0 +1,12 @@
+rpc:
+  name: konna-rpc
+  version: 2.0
+  serverPort: 8081
+  mock: false
+  serializer: kryo
+  serverHost: localhost
+  registryConfig:
+    registry: etcd
+    address: http://localhost:2379
+  protocol: tcp
+  loadBalancer: consistentHashV2

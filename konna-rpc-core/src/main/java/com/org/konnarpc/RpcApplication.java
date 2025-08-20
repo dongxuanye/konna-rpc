@@ -5,7 +5,8 @@ import com.org.konnarpc.config.RpcConfig;
 import com.org.konnarpc.constant.RpcConstant;
 import com.org.konnarpc.registry.Registry;
 import com.org.konnarpc.registry.RegistryFactory;
-import com.org.konnarpc.utils.ConfigUtils;
+import com.org.konnarpc.utils.ConfigUpUtils;
+//import com.org.konnarpc.utils.ConfigUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -40,7 +41,8 @@ public class RpcApplication {
     public static void init(){
         RpcConfig newRpcConfig;
         try{
-            newRpcConfig = ConfigUtils.loadConfig(RpcConfig.class, RpcConstant.DEFAULT_CONFIG_PREFIX);
+//            newRpcConfig = ConfigUtils.loadConfig(RpcConfig.class, RpcConstant.DEFAULT_CONFIG_PREFIX);
+            newRpcConfig = ConfigUpUtils.loadConfig(RpcConfig.class, RpcConstant.DEFAULT_CONFIG_PREFIX);
         }catch (Exception e){
             newRpcConfig = new RpcConfig();
         }
